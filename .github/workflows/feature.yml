@@ -2,7 +2,7 @@ name: Feature
 on: [pull_request]
 jobs:
   Feature:
-    runs-on: macos-11.0
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - run: xcodebuild -scheme Simplog
