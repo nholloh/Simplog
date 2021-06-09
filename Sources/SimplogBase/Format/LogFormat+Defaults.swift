@@ -11,7 +11,7 @@ public extension LogFormat {
     
     /// The default log format, structured like: `17:56:24.12 [DEBUG]: Hello World!`.
     static let `default`: LogFormat = .create {
-        Date(format: "HH:mm:ss.SSSS")
+        Date(format: "HH:mm:ss.SS")
         Separator(.space)
         Level()
             .inBraces(.square)
@@ -20,9 +20,9 @@ public extension LogFormat {
         Message()
     }
     
-    /// A verbose log format, structured like: `17:56:24.12 [DEBUG]: Hello World!`.
+    /// A verbose log format, structured like: `17:56:24.12 <T:main> (Foo:7) [DEBUG]: Hello World!`.
     static let verbose: LogFormat = .create {
-        Date(format: "HH:mm:ss.SSSS")
+        Date(format: "HH:mm:ss.SS")
             .padded(.right)
         
         Text("T:")
