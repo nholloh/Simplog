@@ -25,7 +25,10 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "SimplogBase",
-            dependencies: []
+            dependencies: [],
+            swiftSettings: [
+                .define("REDACT", .when(configuration: .release)),
+            ]
         ),
         .target(
             name: "Simplog",
