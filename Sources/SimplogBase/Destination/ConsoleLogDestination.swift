@@ -35,6 +35,15 @@ public struct ConsoleLogDestination: LogDestination
         self.allowedLogLevels = allowedLogLevels
     }
     
+    public init() {
+        self.logFormatDebug = .default
+        self.logFormatInfo = .default
+        self.logFormatWarning = .default
+        self.logFormatError = .default
+        self.logFormatFatal = .default
+        self.allowedLogLevels = .informational
+    }
+    
     public init(
         logFormatDebug: LogFormat = .default,
         logFormatInfo: LogFormat = .default,

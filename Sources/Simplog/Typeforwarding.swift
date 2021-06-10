@@ -2,7 +2,7 @@
 //  Typeforwarding.swift
 //  
 //
-//  Created by Niklas Holloh on 28.05.21.
+//  Created by Niklas Holloh on 10.06.21.
 //
 
 import Foundation
@@ -35,3 +35,15 @@ public typealias Thread = SimplogBase.Thread
 // MARK: - Destinations
 public typealias LogDestination = SimplogBase.LogDestination
 public typealias ConsoleLogDestination = SimplogBase.ConsoleLogDestination
+
+// MARK: - Conditional import of SimplogDisabled and SimplogEnabled
+#if canImport(SimplogDisabled)
+    import SimplogDisabled
+    public typealias Logger = SimplogDisabled.Simplog
+    public var Log: Logger<None> { SimplogDisabled.Log }
+#elseif canImport(SimplogEnabled)
+    import SimplogEnabled
+    public typealias Logger = SimplogEnabled.Simplog
+    public var Log: Logger<None> { SimplogEnabled.Log }
+#endif
+

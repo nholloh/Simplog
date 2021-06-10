@@ -5,24 +5,31 @@ import PackageDescription
 
 let package = Package(
     name: "Simplog",
+    
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
+        
+        // The standard Simplog library, bundling the SimplogBase
+        // and the SimplogEnabled targets together.
         .library(
             name: "Simplog",
-            targets: ["SimplogBase", "Simplog"]
+            targets: ["Simplog", "SimplogEnabled"]
         ),
+        
+        // The disabled Simplog library. It bundles the SimplogBase
+        // together with SimplogDisabled, however SimplogDisabled will
+        // not forward any calls to logging functions to the actual
+        // logger in SimplogBase. This guarantees a compiletime-safe
+        // disabling of all logging activities. This may be useful for
+        // companies where data privacy in production is an issue.
         .library(
             name: "SimplogDisabled",
-            targets: ["SimplogBase", "SimplogDisabled"]
+            targets: ["Simplog", "SimplogDisabled"]
         )
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-    ],
+    
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
+        
+        // The base target which contains all logic required for logging.
         .target(
             name: "SimplogBase",
             dependencies: [],
@@ -30,16 +37,41 @@ let package = Package(
                 .define("REDACT", .when(configuration: .release)),
             ]
         ),
+        
+        // The Simplog Enabled target. It contains an implementation of the
+        // standard logger interface and collects all necessary information
+        // to forward to the logger in SimplogBase.
         .target(
-            name: "Simplog",
+            name: "SimplogEnabled",
             dependencies: ["SimplogBase"]
         ),
+        
+        // The Simplog Disabled target. It shares an interface with the
+        // actual implementation of Simplog in SimplogEnabled, however does
+        // *not* actually forward your log statements to SimplogBase for logging.
+        // It is bundled into the SimplogDisabled library for compiletime-safe
+        // disabling of all logging activities. This may be useful for companies
+        // where data privacy in production is an issue.
         .target(
             name: "SimplogDisabled",
             dependencies: ["SimplogBase"]
         ),
+        
+        // The main Simplog target, which always needs to be imported.
+        // It will typeforward types from SimplogBase and either SimplogEnabled
+        // or SimplogDisabled target, depending on your project's dependencies.
+        // If, for whatever reason, both targets SimplogDisabled and SimplogEnabled
+        // are linked together into a binary, SimplogDisabled will take precedence
+        // and disable all logging activities.
+        .target(
+            name: "Simplog",
+            dependencies: ["SimplogBase"]
+        ),
+        
+        // The Simplog Test Target
         .testTarget(
             name: "SimplogTests",
-            dependencies: ["Simplog"]),
+            dependencies: ["Simplog", "SimplogEnabled"]
+        )
     ]
 )
