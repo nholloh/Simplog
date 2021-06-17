@@ -1,9 +1,9 @@
-name: Feature-Build-Test
+name: Snapshot
 
-on: 
-  pull_request:
+on:
+  push:
     branches:
-      - feature/*
+      - develop
 
 jobs:
   build:
