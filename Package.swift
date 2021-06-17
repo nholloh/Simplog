@@ -5,14 +5,17 @@ import PackageDescription
 
 let package = Package(
     name: "Simplog",
-    
+    platforms: [.iOS(.v9)],
     products: [
         
         // The standard Simplog library, bundling the SimplogBase
         // and the SimplogEnabled targets together.
         .library(
             name: "Simplog",
-            targets: ["Simplog", "SimplogEnabled"]
+            
+            // DO NOT CHANGE THE ORDER, OTHERWISE TYPEFORWARDING
+            // #canImport WILL FAIL.
+            targets: ["SimplogEnabled", "Simplog"]
         ),
         
         // The disabled Simplog library. It bundles the SimplogBase
@@ -23,7 +26,10 @@ let package = Package(
         // companies where data privacy in production is an issue.
         .library(
             name: "SimplogDisabled",
-            targets: ["Simplog", "SimplogDisabled"]
+            
+            // DO NOT CHANGE THE ORDER, OTHERWISE TYPEFORWARDING
+            // #canImport WILL FAIL.
+            targets: ["SimplogDisabled", "Simplog"]
         )
     ],
     
