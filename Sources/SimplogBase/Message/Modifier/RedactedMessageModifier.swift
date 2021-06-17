@@ -16,9 +16,9 @@ public extension LogMessageModifier {
     /// - Returns: An instance of `LogMessageModifier`, containing the modified content.
     static func redacted(_ content: String, with character: String = "*****") -> LogMessageModifier {
         #if REDACT
-        LogMessageModifier(modifiedContent: character)
+        return LogMessageModifier(modifiedContent: character)
         #else
-        LogMessageModifier(modifiedContent: content)
+        return LogMessageModifier(modifiedContent: content)
         #endif
     }
     
