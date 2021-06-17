@@ -1,0 +1,26 @@
+name: Snapshot
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        swift: ["5.3"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: fwal/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+      - uses: actions/checkout@v2
+      - name: Clean
+        run: xcodebuild clean -scheme Simplog
+      - name: Build
+        run: xcodebuild -scheme Simplog
+      - name: Run tests
+        run: swift test
