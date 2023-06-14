@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Simplog",
-    platforms: [.iOS(.v9)],
+    platforms: [.iOS(.v11), .macCatalyst(.v13)],
     products: [
         .library(
             name: "Simplog",
