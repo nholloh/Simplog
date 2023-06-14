@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SimplogBase
 
 /// The default Simplog log instance.
 public let Log = Simplog<None>()
