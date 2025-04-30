@@ -16,14 +16,14 @@ extension LogFormat {
     public struct ModifiedItem<Item: LogFormatItem>: LogFormatItem {
         
         private let original: Item
-        private let modifier: (String) -> String
+        private let modifier: @Sendable (String) -> String
         
         /// A modifier for another LogFormatItem, which mutates the original
         /// result of the LogFormatItem based on a modifier closure.
         /// - Parameters:
         ///   - item: The original LogFormatItem.
         ///   - modifier: The closure modifying the original LogFormatItem's result.
-        public init(original item: Item, modifier: @escaping (String) -> String) {
+        public init(original item: Item, modifier: @Sendable @escaping (String) -> String) {
             original = item
             self.modifier = modifier
         }

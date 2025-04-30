@@ -7,16 +7,16 @@
 
 import Foundation
 
-public struct ConsoleLogDestination: LogDestination
-{
-    // MARK: - Destination Configuration
-    public let logFormatDebug: LogFormat
-    public let logFormatInfo: LogFormat
-    public let logFormatWarning: LogFormat
-    public let logFormatError: LogFormat
-    public let logFormatFatal: LogFormat
+public struct ConsoleLogDestination: LogDestination {
     
-    public let allowedLogLevels: Set<LogLevel>
+    // MARK: - Destination Configuration
+    public var logFormatDebug: LogFormat
+    public var logFormatInfo: LogFormat
+    public var logFormatWarning: LogFormat
+    public var logFormatError: LogFormat
+    public var logFormatFatal: LogFormat
+    
+    public var allowedLogLevels: Set<LogLevel>
     
     // MARK: - Init
     public init(
@@ -25,7 +25,7 @@ public struct ConsoleLogDestination: LogDestination
         @LogFormatBuilder logFormatWarning: () -> LogFormat = { .default },
         @LogFormatBuilder logFormatError: () -> LogFormat = { .default },
         @LogFormatBuilder logFormatFatal: () -> LogFormat = { .default },
-        allowedLogLevels: Set<LogLevel> = .informational
+        allowedLogLevels: Set<LogLevel> = .informational,
     ) {
         self.logFormatDebug = logFormatDebug()
         self.logFormatInfo = logFormatInfo()
@@ -44,25 +44,8 @@ public struct ConsoleLogDestination: LogDestination
         self.allowedLogLevels = .informational
     }
     
-    public init(
-        logFormatDebug: LogFormat = .default,
-        logFormatInfo: LogFormat = .default,
-        logFormatWarning: LogFormat = .default,
-        logFormatError: LogFormat = .default,
-        logFormatFatal: LogFormat = .default,
-        allowedLogLevels: Set<LogLevel> = .informational
-    ) {
-        self.logFormatDebug = logFormatDebug
-        self.logFormatInfo = logFormatInfo
-        self.logFormatWarning = logFormatWarning
-        self.logFormatError = logFormatError
-        self.logFormatFatal = logFormatFatal
-        self.allowedLogLevels = allowedLogLevels
-    }
-    
     // MARK: - Logging Outlet
-    public func log(_ message: String)
-    {
+    public func log(_ message: String, subsystem: String?, category: String?, level: LogLevel) {
         print(message)
     }
 }

@@ -9,29 +9,32 @@ import Foundation
 
 /// Sequentializes and formats log messages before forwarding them
 /// to destinations.
-public final class LogOrchestrator<ExtendedInfo: Codable> {
+public final class LogOrchestrator<ExtendedInfo: Codable & Sendable>: Sendable {
     
     private let loggingQueue = DispatchQueue(label: "Simplog.logorchestration")
-    private lazy var loggingQueueFunction: (@escaping () -> Void) -> Void =
-        { [loggingQueue] in loggingQueue.async(execute: $0) }
+    private let loggingQueueFunction: @Sendable (@Sendable @escaping () -> Void) -> Void
     
     /// Whether to log to the destinations synchronously. If true, log will only
     /// return once all destinations have received the log output. This can especially
     /// be helpful to diagnose race conditions. Default is false to preserve performance.
-    public var logSynchronously: Bool = false {
-        didSet {
-            loggingQueueFunction = logSynchronously ?
-                { [loggingQueue] in loggingQueue.sync(execute: $0) } :
-                { [loggingQueue] in loggingQueue.async(execute: $0) }
-        }
-    }
+    public let logSynchronously: Bool
     
     /// The destinations which will receive fully formatted log messages.
-    public var destinations: [LogDestination] = []
+    public let destinations: [LogDestination]
     
     /// Creates an instance of LogOrchestrator.
-    public init() { }
-    
+    /// - Parameters:
+    ///   - logSynchronously: Whether to log to the destinations synchronously. If true, log will only
+    ///   return once all destinations have received the log output. This can especially
+    ///   be helpful to diagnose race conditions. Default is false to preserve performance.
+    ///   - destinations: The destinations which will receive fully formatted log messages.
+    public init(logSynchronously: Bool, destinations: [LogDestination]) {
+        self.destinations = destinations
+        self.logSynchronously = logSynchronously
+        loggingQueueFunction =
+          if logSynchronously { { [loggingQueue] in loggingQueue.sync(execute: $0) } }
+          else { { [loggingQueue] in loggingQueue.async(execute: $0) } }
+    }
     
     /// Logs a message to all available destinations with respect to their formatting.
     /// - Parameters:
@@ -43,8 +46,17 @@ public final class LogOrchestrator<ExtendedInfo: Codable> {
     ///   - level: The log level.
     /// - Note: It is advised to use a Simplog instance for logging, which will use
     ///     the LogOrchestrator in turn.
-    public func log(msg: String, file: String, line: Int, function: String, extendedInfo: ExtendedInfo, level: LogLevel) {
-        let messageData = LogMessageData(message: msg, fileName: file, fileLine: line, function: function, level: level, extendedInfo: extendedInfo)
+    public func log(msg: String, subsystem: String?, category: String?, file: String, line: Int, function: String, extendedInfo: ExtendedInfo, level: LogLevel) {
+        let messageData = LogMessageData(
+            message: msg,
+            subsystem: subsystem,
+            category: category,
+            fileName: file,
+            fileLine: line,
+            function: function,
+            level: level,
+            extendedInfo: extendedInfo
+        )
         
         loggingQueueFunction { [destinations] in
             destinations.forEach { destination in
@@ -54,7 +66,7 @@ public final class LogOrchestrator<ExtendedInfo: Codable> {
                 
                 let logFormat = destination.format(forLevel: level)
                 let formattedMessage = logFormat.combinedFormat.format(messageData)
-                destination.log(formattedMessage)
+                destination.log(formattedMessage, subsystem: subsystem, category: category, level: level)
             }
         }
     }

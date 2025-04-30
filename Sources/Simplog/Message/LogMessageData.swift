@@ -14,6 +14,12 @@ struct _LogMessageData<ExtendedInfo: Codable>: Codable {
     /// The message logged in `Log.debug(_ message:)`.
     let message: String
     
+    /// The subsystem where the log message originates.
+    let subsystem: String?
+    
+    /// The category assigned to the log message.
+    let category: String?
+    
     /// The date and time, when the message was logged.
     let date: Foundation.Date
     
@@ -42,6 +48,8 @@ struct _LogMessageData<ExtendedInfo: Codable>: Codable {
     
     init(
         message: String,
+        subsystem: String?,
+        category: String?,
         fileName: String,
         fileLine: Int,
         function: String,
@@ -49,6 +57,8 @@ struct _LogMessageData<ExtendedInfo: Codable>: Codable {
         extendedInfo: ExtendedInfo
     ) {
         self.message = message
+        self.subsystem = subsystem
+        self.category = category
         self.fileName = fileName
         self.fileLine = fileLine
         self.function = function
@@ -63,7 +73,7 @@ struct _LogMessageData<ExtendedInfo: Codable>: Codable {
     
     private static var currentStackTrace: [String] {
         let trace = Foundation.Thread.callStackSymbols
-        let index = trace.filter { $0.contains("Simplog") || $0.contains("SimplogBase") }.count
+        let index = trace.filter { $0.contains("Simplog") }.count
         return Array(trace.dropFirst(index + 1))
     }
 }
@@ -71,9 +81,15 @@ struct _LogMessageData<ExtendedInfo: Codable>: Codable {
 /// A struct containing all relevant data to display a
 /// log message. Can be extended using a custom `ExtendedInfo`
 /// generic type.
-public struct LogMessageData<ExtendedInfo: Codable> {
+public struct LogMessageData<ExtendedInfo: Codable & Sendable>: Sendable {
     /// The message logged in `Log.debug(_ message:)`.
     public let message: String
+    
+    /// The subsystem where the log message originates.
+    public let subsystem: String?
+    
+    /// The category assigned to the log message.
+    public let category: String?
     
     /// The date and time, when the message was logged.
     public let date: Foundation.Date
@@ -96,16 +112,18 @@ public struct LogMessageData<ExtendedInfo: Codable> {
     public let function: String
     
     /// The log level.
-    let level: LogLevel
+    public let level: LogLevel
     
     /// Custom extended information.
-    let extendedInfo: ExtendedInfo
+    public let extendedInfo: ExtendedInfo
     
     /// The entire log message, json formatted.
     public let json: String
     
     init(
         message: String,
+        subsystem: String?,
+        category: String?,
         fileName: String,
         fileLine: Int,
         function: String,
@@ -114,6 +132,8 @@ public struct LogMessageData<ExtendedInfo: Codable> {
     ) {
         let messageData = _LogMessageData(
             message: message,
+            subsystem: subsystem,
+            category: category,
             fileName: fileName,
             fileLine: fileLine,
             function: function,
@@ -122,6 +142,8 @@ public struct LogMessageData<ExtendedInfo: Codable> {
         )
         
         self.message = message
+        self.subsystem = subsystem
+        self.category = category
         self.date = messageData.date
         self.thread = messageData.thread
         self.fileName = fileName

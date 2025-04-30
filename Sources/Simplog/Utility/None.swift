@@ -7,6 +7,6 @@
 
 import Foundation
 
-public struct None: Codable {
+public struct None: Codable, Sendable {
     public init() { }
 }

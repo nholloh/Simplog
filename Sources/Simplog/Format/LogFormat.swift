@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LogFormat: ExpressibleByArrayLiteral {
+public struct LogFormat: ExpressibleByArrayLiteral, Sendable {
     let combinedFormat: LogFormatItem
     
     public init(arrayLiteral elements: LogFormatItem...) {

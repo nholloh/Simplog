@@ -10,10 +10,12 @@ import Simplog
 
 class ViewController: UIViewController {
 
+    let log = Log.for(subsystem: String(describing: ViewController.self), category: "ViewController")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        Log.debug("ViewDidLoad")
+        log.debug("ViewDidLoad")
     }
 
 

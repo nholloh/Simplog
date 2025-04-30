@@ -3,17 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E91419B2DC2286B0031029F /* Simplog in Frameworks */ = {isa = PBXBuildFile; productRef = 4E91419A2DC2286B0031029F /* Simplog */; };
+		4EA156F62DC24D2A003E32D1 /* Simplog in Frameworks */ = {isa = PBXBuildFile; productRef = 4EA156F52DC24D2A003E32D1 /* Simplog */; };
 		851CF3C226725FD6004097CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851CF3C126725FD6004097CD /* AppDelegate.swift */; };
 		851CF3C426725FD6004097CD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851CF3C326725FD6004097CD /* SceneDelegate.swift */; };
 		851CF3C626725FD6004097CD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851CF3C526725FD6004097CD /* ViewController.swift */; };
 		851CF3C926725FD6004097CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 851CF3C726725FD6004097CD /* Main.storyboard */; };
 		851CF3CB26725FD8004097CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 851CF3CA26725FD8004097CD /* Assets.xcassets */; };
 		851CF3CE26725FD8004097CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 851CF3CC26725FD8004097CD /* LaunchScreen.storyboard */; };
-		851CF3D72672607A004097CD /* Simplog in Frameworks */ = {isa = PBXBuildFile; productRef = 851CF3D62672607A004097CD /* Simplog */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +33,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				851CF3D72672607A004097CD /* Simplog in Frameworks */,
+				4EA156F62DC24D2A003E32D1 /* Simplog in Frameworks */,
+				4E91419B2DC2286B0031029F /* Simplog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +88,8 @@
 			);
 			name = SimplogDemo;
 			packageProductDependencies = (
-				851CF3D62672607A004097CD /* Simplog */,
+				4E91419A2DC2286B0031029F /* Simplog */,
+				4EA156F52DC24D2A003E32D1 /* Simplog */,
 			);
 			productName = SimplogDemo;
 			productReference = 851CF3BE26725FD6004097CD /* SimplogDemo.app */;
@@ -116,7 +119,7 @@
 			);
 			mainGroup = 851CF3B526725FD6004097CD;
 			packageReferences = (
-				851CF3D52672607A004097CD /* XCRemoteSwiftPackageReference "Simplog" */,
+				4EA156F42DC24D2A003E32D1 /* XCLocalSwiftPackageReference "../../../Simplog" */,
 			);
 			productRefGroup = 851CF3BF26725FD6004097CD /* Products */;
 			projectDirPath = "";
@@ -228,6 +231,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "-DLOGGING_DISABLED";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -282,6 +286,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "-DLOGGING_DISABLED";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -350,21 +355,20 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		851CF3D52672607A004097CD /* XCRemoteSwiftPackageReference "Simplog" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nholloh/Simplog.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		4EA156F42DC24D2A003E32D1 /* XCLocalSwiftPackageReference "../../../Simplog" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../Simplog;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		851CF3D62672607A004097CD /* Simplog */ = {
+		4E91419A2DC2286B0031029F /* Simplog */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 851CF3D52672607A004097CD /* XCRemoteSwiftPackageReference "Simplog" */;
+			productName = Simplog;
+		};
+		4EA156F52DC24D2A003E32D1 /* Simplog */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = Simplog;
 		};
 /* End XCSwiftPackageProductDependency section */

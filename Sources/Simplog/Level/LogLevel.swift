@@ -9,7 +9,7 @@ import Foundation
 
 /// The Level describes the level of detail of a corresponding message. It can
 /// also be used to filter for specific log levels in a LogDestination.
-public enum LogLevel: Int, CustomStringConvertible, Codable {
+public enum LogLevel: Int, CustomStringConvertible, Codable, Sendable {
     /// Debug: Level for detailed information including user data which
     /// might be helpful to a developer during development or testing.
     /// Debug logs should not be enabled for production builds due to

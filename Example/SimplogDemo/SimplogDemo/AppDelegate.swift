@@ -8,12 +8,18 @@
 import UIKit
 import Simplog
 
+
+let Log = {
+    var consoleLogDestination = OSLogDestination(defaultSubsystem: "General", defaultCategory: "General")
+    consoleLogDestination.allowedLogLevels = .all
+    consoleLogDestination.logFormatDebug = .verbose
+    return Logger<None>(destinations: [consoleLogDestination], logSynchronously: false)
+}()
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        Log.destinations.append(ConsoleLogDestination())
-        
         return true
     }
 

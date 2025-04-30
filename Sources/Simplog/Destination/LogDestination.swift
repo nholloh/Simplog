@@ -8,8 +8,7 @@
 import Foundation
 
 /// Describes a target, where formatted log output should be delivered.
-public protocol LogDestination
-{
+public protocol LogDestination: Sendable {
     /// Describes the format of the log output. If a format was defined for a specific
     /// log level, the level specific format (e.g. `logFormatDebug`) takes precedence.
     @LogFormatBuilder var logFormat: LogFormat { get }
@@ -42,16 +41,18 @@ public protocol LogDestination
     /// Is called by the log orchestrator after formatting the message
     /// according to the desired format.
     /// - Parameter message: The formatted message which is redirected to the destination's output.
+    /// - Parameter level: The level with which the message shall be logged.
+    /// - Parameter subsystem: The subsystem where the log message originates.
+    /// - Parameter category: The category assigned to the log message.
     /// - Important: Logging should happen synchronously. The log orchestrator decides itself, whether
     ///     logging should happen synchronously or asynchronously respective to the rest of the app.
     /// - Note: Calls to log will only happen in sequence and are threadsafe as guaranteed by
     ///     the log orchestrator.
-    func log(_ message: String)
+    func log(_ message: String, subsystem: String?, category: String?, level: LogLevel)
 }
 
 /// Optional protocol fields
-public extension LogDestination
-{
+public extension LogDestination {
     var logFormat: LogFormat { .default }
     var logFormatDebug: LogFormat { logFormat }
     var logFormatInfo: LogFormat { logFormat }

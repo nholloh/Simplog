@@ -6,29 +6,27 @@
 //
 
 import Foundation
-import SimplogBase
-
-/// The default Simplog log instance.
-public let Log = Simplog<None>()
 
 /// An empty simplog facade which does not call any log
 /// implementations.
-public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
+public final class SimplogDisabled<ExtendedInfo: Codable>: SimplogLogger {
     
-    public var logSynchronously: Bool = false
-    public var destinations: [LogDestination] = []
+    public let logSynchronously: Bool = false
+    public let destinations: [LogDestination] = []
     
-    public func debug(
+    public func `for`(subsystem: String?, category: String?) -> Self { return self }
+    
+    public nonisolated func debug(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) { }
     
     public func debug(
         _ msg: @autoclosure () -> String,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None { }
@@ -36,14 +34,14 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     public func info(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) { }
     
     public func info(
         _ msg: @autoclosure () -> String,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None { }
@@ -51,14 +49,14 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     public func warning(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) { }
     
     public func warning(
         _ msg: @autoclosure () -> String,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None { }
@@ -66,14 +64,14 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     public func error(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) { }
     
     public func error(
         _ msg: @autoclosure () -> String,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None { }
@@ -81,15 +79,16 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     public func fatal(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) { }
     
     public func fatal(
         _ msg: @autoclosure () -> String,
-        file: String = #file,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None { }
 }
+

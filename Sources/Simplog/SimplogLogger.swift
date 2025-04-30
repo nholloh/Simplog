@@ -7,16 +7,20 @@
 
 import Foundation
 
-public protocol SimplogLogger {
-    associatedtype ExtendedInfo: Codable
+public typealias Logger = Simplog
+
+public protocol SimplogLogger<ExtendedInfo> where ExtendedInfo: Codable & Sendable {
     
-    /// Whether to log to the destinations synchronously. If true, log will only
-    /// return once all destinations have received the log output. This can especially
-    /// be helpful to diagnose race conditions. Default is false to preserve performance.
-    var logSynchronously: Bool { get }
+    associatedtype ExtendedInfo: Codable & Sendable
     
-    /// The destinations which will receive fully formatted log messages.
-    var destinations: [LogDestination] { get }
+    /// Creates a new `SimplogLogger` instance for a specific
+    /// subsystem or category. Use this to create class or component
+    /// specific logger instances.
+    /// - Parameters:
+    ///   - subsystem: The subsystem as used by OSLog.
+    ///   - category: The category as used by OSLog.
+    /// - Returns: A new instance of `SimplogLogger` with category and subsystem assigned.
+    func `for`(subsystem: String?, category: String?) -> Self
     
     /// Logs a message with debug level.
     /// - Parameters:

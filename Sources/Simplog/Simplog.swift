@@ -6,41 +6,50 @@
 //
 
 import Foundation
-import SimplogBase
 
-/// The default Simplog log instance.
-public let Log = Simplog<None>()
-
-public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
-    
-    // MARK: - Configuration
-    public var logSynchronously: Bool {
-        get { logOrchestrator.logSynchronously }
-        set { logOrchestrator.logSynchronously = newValue }
-    }
-    
-    public var destinations: [LogDestination] {
-        get { logOrchestrator.destinations }
-        set { logOrchestrator.destinations = newValue }
-    }
+public final class Simplog<ExtendedInfo: Codable & Sendable>: SimplogLogger {
     
     // MARK: - Dependencies
     private let logOrchestrator: LogOrchestrator<ExtendedInfo>
     
+    // MARK: - Configuration
+    private let category: String?
+    private let subsystem: String?
+    
     // MARK: - Init
-    public convenience init() {
-        self.init(logOrchestrator: LogOrchestrator<ExtendedInfo>())
+    public convenience init(
+        destinations: [any LogDestination],
+        logSynchronously: Bool = false,
+        subsystem: String? = nil,
+        category: String? = nil
+    ) {
+        self.init(
+            logOrchestrator: LogOrchestrator<ExtendedInfo>(logSynchronously: logSynchronously, destinations: destinations),
+            subsystem: subsystem,
+            category: category
+        )
     }
     
-    init(logOrchestrator: LogOrchestrator<ExtendedInfo>) {
+    init(
+        logOrchestrator: LogOrchestrator<ExtendedInfo>,
+        subsystem: String?,
+        category: String?
+    ) {
         self.logOrchestrator = logOrchestrator
+        self.category = category
+        self.subsystem = subsystem
+    }
+    
+    // MARK: - Category & Subsystem
+    public func `for`(subsystem: String?, category: String?) -> Self {
+        return Self.init(logOrchestrator: logOrchestrator, subsystem: subsystem, category: category)
     }
     
     // MARK: - Logging
-    public func debug(
+    public nonisolated func debug(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
@@ -56,19 +65,19 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     ///     The compiler will supply the default argument. Usually you can leave this empty.
     ///   - function: The calling function.
     ///     The compiler will supply the default argument. Usually you can leave this empty.
-    public func debug(
+    public nonisolated func debug(
         _ msg: @autoclosure () -> String,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None {
         log(msg: msg(), file: file, line: line, function: function, extendedInfo: None(), level: .debug)
     }
     
-    public func info(
+    public nonisolated func info(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
@@ -84,19 +93,19 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     ///     The compiler will supply the default argument. Usually you can leave this empty.
     ///   - function: The calling function.
     ///     The compiler will supply the default argument. Usually you can leave this empty.
-    public func info(
+    public nonisolated func info(
         _ msg: @autoclosure () -> String,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None {
         log(msg: msg(), file: file, line: line, function: function, extendedInfo: None(), level: .info)
     }
     
-    public func warning(
+    public nonisolated func warning(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
@@ -112,19 +121,19 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     ///     The compiler will supply the default argument. Usually you can leave this empty.
     ///   - function: The calling function.
     ///     The compiler will supply the default argument. Usually you can leave this empty.
-    public func warning(
+    public nonisolated func warning(
         _ msg: @autoclosure () -> String,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None {
         log(msg: msg(), file: file, line: line, function: function, extendedInfo: None(), level: .warning)
     }
     
-    public func error(
+    public nonisolated func error(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
@@ -140,19 +149,19 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     ///     The compiler will supply the default argument. Usually you can leave this empty.
     ///   - function: The calling function.
     ///     The compiler will supply the default argument. Usually you can leave this empty.
-    public func error(
+    public nonisolated func error(
         _ msg: @autoclosure () -> String,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None {
         log(msg: msg(), file: file, line: line, function: function, extendedInfo: None(), level: .error)
     }
     
-    public func fatal(
+    public nonisolated func fatal(
         _ msg: @autoclosure () -> String,
         extendedInfo: ExtendedInfo,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
@@ -168,16 +177,16 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
     ///     The compiler will supply the default argument. Usually you can leave this empty.
     ///   - function: The calling function.
     ///     The compiler will supply the default argument. Usually you can leave this empty.
-    public func fatal(
+    public nonisolated func fatal(
         _ msg: @autoclosure () -> String,
-        file: String = URL(fileURLWithPath: "\(#file)").lastPathComponent,
+        file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) where ExtendedInfo == None {
         log(msg: msg(), file: file, line: line, function: function, extendedInfo: None(), level: .fatal)
     }
     
-    private func log(
+    private nonisolated func log(
         msg: String,
         file: String,
         line: Int,
@@ -185,7 +194,16 @@ public class Simplog<ExtendedInfo: Codable>: SimplogLogger {
         extendedInfo: ExtendedInfo,
         level: LogLevel
     ) {
-        logOrchestrator.log(msg: msg, file: file, line: line, function: function, extendedInfo: extendedInfo, level: level)
+        logOrchestrator.log(
+            msg: msg,
+            subsystem: subsystem,
+            category: category,
+            file: file,
+            line: line,
+            function: function,
+            extendedInfo: extendedInfo,
+            level: level
+        )
     }
     
 }

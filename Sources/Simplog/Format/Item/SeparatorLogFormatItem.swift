@@ -11,7 +11,7 @@ import Foundation
 public struct Separator: LogFormatItem {
     
     /// Describes different separator styles.
-    public enum SeparatorStyle: String {
+    public enum SeparatorStyle: String, Sendable {
         /// Colon Separator `:`
         case colon = ":"
         
