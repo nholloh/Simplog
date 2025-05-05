@@ -48,7 +48,7 @@ public protocol LogDestination: Sendable {
     ///     logging should happen synchronously or asynchronously respective to the rest of the app.
     /// - Note: Calls to log will only happen in sequence and are threadsafe as guaranteed by
     ///     the log orchestrator.
-    func log(_ message: String, subsystem: String?, category: String?, level: LogLevel) async
+    func log(_ message: String, subsystem: String?, category: String?, level: LogLevel)
 }
 
 /// Optional protocol fields and defaults.

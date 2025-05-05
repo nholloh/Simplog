@@ -1,6 +1,6 @@
 //
 //  LogOrchestrator.swift
-//  
+//
 //
 //  Created by Niklas Holloh on 28.05.21.
 //
@@ -11,7 +11,7 @@ import Foundation
 /// to destinations.
 public final class LogOrchestrator<ExtendedInfo: Codable & Sendable>: Sendable {
     
-    private let loggingQueue = DispatchQueue(label: "Simplog.logorchestration")
+    private let loggingQueue: DispatchQueue
     private let loggingQueueFunction: @Sendable (@Sendable @escaping () -> Void) -> Void
     
     /// Whether to log to the destinations synchronously. If true, log will only
@@ -31,9 +31,10 @@ public final class LogOrchestrator<ExtendedInfo: Codable & Sendable>: Sendable {
     public init(logSynchronously: Bool, destinations: [LogDestination]) {
         self.destinations = destinations
         self.logSynchronously = logSynchronously
+        self.loggingQueue = DispatchQueue(label: "Simplog.logorchestration", qos: logSynchronously ? .userInitiated : .utility)
         loggingQueueFunction =
-          if logSynchronously { { [loggingQueue] in loggingQueue.sync(execute: $0) } }
-          else { { [loggingQueue] in loggingQueue.async(execute: $0) } }
+        if logSynchronously { { [loggingQueue] in loggingQueue.sync(execute: $0) } }
+        else { { [loggingQueue] in loggingQueue.async(execute: $0) } }
     }
     
     /// Logs a message to all available destinations with respect to their formatting.
@@ -59,34 +60,20 @@ public final class LogOrchestrator<ExtendedInfo: Codable & Sendable>: Sendable {
         )
         
         loggingQueueFunction { [destinations] in
-            destinations.forEach { destination in
-                // We synchronize these destination calls through the DispatchGroup here
-                // because either we're already in an async context through the DispatchQueue
-                // loggingQueue above, or the developer has opted for synchronous logging,
-                // in which case the expectation is that the whole log() function does not return
-                // until the contents have been written to all destinations.
-                let group = DispatchGroup()
-                
-                for destination in destinations {
-                    guard destination.allowedLogLevels.contains(level) else { continue }
-                    
+            destinations
+                .filter { $0.allowedLogLevels.contains(level) }
+                .forEach { destination in
                     let format = destination.format(forLevel: level)
                     let formatted = format.combinedFormat.format(messageData)
                     
-                    group.enter()
-                    Task.detached(priority: .utility) {
-                        await destination.log(
-                            formatted,
-                            subsystem: subsystem,
-                            category: category,
-                            level: level
-                        )
-                        group.leave()
-                    }
+                    destination.log(
+                        formatted,
+                        subsystem: subsystem,
+                        category: category,
+                        level: level
+                    )   
                 }
-                
-                group.wait()
-            }
         }
     }
 }
+

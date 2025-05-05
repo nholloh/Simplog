@@ -8,7 +8,7 @@
 import Foundation
 
 /// A log destination for logging to file.
-public final actor FileLogDestination: LogDestination {
+public final class FileLogDestination: LogDestination {
     
     /// Errors that occur when logging to file.
     public enum Error: Swift.Error {
@@ -20,6 +20,7 @@ public final actor FileLogDestination: LogDestination {
     // MARK: - State
     private let logFileUrl: URL
     private let fileHandle: FileHandle
+    private let queue = DispatchQueue(label: "Simplog.FileLogDestination")
     
     // MARK: - Configuration
     public let logFormatDebug: LogFormat
@@ -33,17 +34,19 @@ public final actor FileLogDestination: LogDestination {
     /// Returns the current log file's contents. Useful for e.g. sending them via E-Mail.
     public var logFileContents: String? {
         get throws {
-            guard FileManager.default.fileExists(atPath: logFileUrl.path) else {
-                return nil
+            try queue.sync {
+                guard FileManager.default.fileExists(atPath: logFileUrl.path) else {
+                    return nil
+                }
+                return try String(contentsOf: logFileUrl, encoding: .utf8)
             }
-            return try String(contentsOf: logFileUrl, encoding: .utf8)
         }
     }
     
     // MARK: - Lifecycle
     @available(iOS 16.0, *)
     /// A convenience initializer that automatically constructs a log file url containing the app's bundle identifier and the current date.
-    public init(
+    public convenience init(
         allowedLogLevels: Set<LogLevel> = .informational,
         logFormatDebug: @autoclosure () -> LogFormat = .default,
         logFormatInfo: @autoclosure () -> LogFormat = .default,
@@ -97,18 +100,21 @@ public final actor FileLogDestination: LogDestination {
     }
     
     deinit {
-        // Final flush and close
-        fileHandle.synchronizeFile()
-        try? fileHandle.close()
+        queue.sync {
+            fileHandle.synchronizeFile()
+            try? fileHandle.close()
+        }
     }
     
     // MARK: - LogDestination
     public func log(_ message: String, subsystem: String?, category: String?, level: LogLevel) {
-        do {
-            let data = Data(message.utf8)
-            try fileHandle.seekToEnd()
-            try fileHandle.write(contentsOf: data)
-            fileHandle.synchronizeFile()
-        } catch { }
+        queue.sync {
+            do {
+                let data = Data(message.utf8)
+                try fileHandle.seekToEnd()
+                try fileHandle.write(contentsOf: data)
+                fileHandle.synchronizeFile()
+            } catch { }
+        }
     }
 }

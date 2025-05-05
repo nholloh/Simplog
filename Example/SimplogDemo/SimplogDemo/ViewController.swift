@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         log.debug("ViewDidLoad")
         Task {
             do {
-                let log = try await fileLogDestination.logFileContents
+                let log = try fileLogDestination.logFileContents
                 print(log)
             } catch {
                 print(error)
