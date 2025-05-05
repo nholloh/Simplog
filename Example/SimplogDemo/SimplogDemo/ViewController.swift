@@ -16,6 +16,14 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         log.debug("ViewDidLoad")
+        Task {
+            do {
+                let log = try await fileLogDestination.logFileContents
+                print(log)
+            } catch {
+                print(error)
+            }
+        }
     }
 
 

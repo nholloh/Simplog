@@ -20,12 +20,12 @@ public struct ConsoleLogDestination: LogDestination {
     
     // MARK: - Init
     public init(
-        @LogFormatBuilder logFormatDebug: () -> LogFormat = { .default },
-        @LogFormatBuilder logFormatInfo: () -> LogFormat = { .default },
-        @LogFormatBuilder logFormatWarning: () -> LogFormat = { .default },
-        @LogFormatBuilder logFormatError: () -> LogFormat = { .default },
-        @LogFormatBuilder logFormatFatal: () -> LogFormat = { .default },
         allowedLogLevels: Set<LogLevel> = .informational,
+        logFormatDebug: @autoclosure () -> LogFormat = .default,
+        logFormatInfo: @autoclosure () -> LogFormat = .default,
+        logFormatWarning: @autoclosure () -> LogFormat = .default,
+        logFormatError: @autoclosure () -> LogFormat = .default,
+        logFormatFatal: @autoclosure () -> LogFormat = .default
     ) {
         self.logFormatDebug = logFormatDebug()
         self.logFormatInfo = logFormatInfo()

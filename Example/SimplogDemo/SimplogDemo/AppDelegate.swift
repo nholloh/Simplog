@@ -9,11 +9,14 @@ import UIKit
 import Simplog
 
 
+let fileLogDestination = try! FileLogDestination(allowedLogLevels: .all, logFormatDebug: .verbose)
+
 let Log = {
     var consoleLogDestination = OSLogDestination(defaultSubsystem: "General", defaultCategory: "General")
     consoleLogDestination.allowedLogLevels = .all
     consoleLogDestination.logFormatDebug = .verbose
-    return Logger<None>(destinations: [consoleLogDestination], logSynchronously: false)
+    
+    return Logger<None>(destinations: [consoleLogDestination, fileLogDestination], logSynchronously: false)
 }()
 
 @main

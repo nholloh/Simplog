@@ -60,13 +60,32 @@ public final class LogOrchestrator<ExtendedInfo: Codable & Sendable>: Sendable {
         
         loggingQueueFunction { [destinations] in
             destinations.forEach { destination in
-                guard destination.allowedLogLevels.contains(level) else {
-                    return
+                // We synchronize these destination calls through the DispatchGroup here
+                // because either we're already in an async context through the DispatchQueue
+                // loggingQueue above, or the developer has opted for synchronous logging,
+                // in which case the expectation is that the whole log() function does not return
+                // until the contents have been written to all destinations.
+                let group = DispatchGroup()
+                
+                for destination in destinations {
+                    guard destination.allowedLogLevels.contains(level) else { continue }
+                    
+                    let format = destination.format(forLevel: level)
+                    let formatted = format.combinedFormat.format(messageData)
+                    
+                    group.enter()
+                    Task.detached(priority: .utility) {
+                        await destination.log(
+                            formatted,
+                            subsystem: subsystem,
+                            category: category,
+                            level: level
+                        )
+                        group.leave()
+                    }
                 }
                 
-                let logFormat = destination.format(forLevel: level)
-                let formattedMessage = logFormat.combinedFormat.format(messageData)
-                destination.log(formattedMessage, subsystem: subsystem, category: category, level: level)
+                group.wait()
             }
         }
     }

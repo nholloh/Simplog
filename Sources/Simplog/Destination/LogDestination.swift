@@ -48,17 +48,17 @@ public protocol LogDestination: Sendable {
     ///     logging should happen synchronously or asynchronously respective to the rest of the app.
     /// - Note: Calls to log will only happen in sequence and are threadsafe as guaranteed by
     ///     the log orchestrator.
-    func log(_ message: String, subsystem: String?, category: String?, level: LogLevel)
+    func log(_ message: String, subsystem: String?, category: String?, level: LogLevel) async
 }
 
-/// Optional protocol fields
+/// Optional protocol fields and defaults.
 public extension LogDestination {
     var logFormat: LogFormat { .default }
-    var logFormatDebug: LogFormat { logFormat }
-    var logFormatInfo: LogFormat { logFormat }
-    var logFormatWarning: LogFormat { logFormat }
-    var logFormatError: LogFormat { logFormat }
-    var logFormatFatal: LogFormat { logFormat }
+    var logFormatDebug: LogFormat { get { logFormat } }
+    var logFormatInfo: LogFormat { get { logFormat } }
+    var logFormatWarning: LogFormat { get { logFormat } }
+    var logFormatError: LogFormat { get { logFormat } }
+    var logFormatFatal: LogFormat { get { logFormat } }
     
     var allowedLogLevels: Set<LogLevel> { .informational }
 }
